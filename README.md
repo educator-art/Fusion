@@ -21,10 +21,10 @@ Stable Diffusionによる画像生成を行うためのUI、Fusionをリリー�
 4ステップで起動できます
 
 ```bash
-# プロジェクトをcolabにコピーします
+# プロジェクトをColabにコピーします
 !git clone https://github.com/educator-art/Fusion
 
-# コピーしたfusionフォルダにカレントディレクトリを変更します
+# コピーしたFusionフォルダにカレントディレクトリを変更します
 %cd Fusion
 
 # 必要なライブラリをインストールします
