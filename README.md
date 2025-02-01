@@ -14,7 +14,7 @@ Stable Diffusionによる画像生成を行うためのUI、Fusionをリリー�
 
 ## 前提
 
-- Google Colab
+- Google Colab Pro
 
 ## 導入
 
