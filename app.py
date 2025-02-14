@@ -1,11 +1,13 @@
 """
 Fusion
 2025.02.01 CREATED
+2025.02.14 UPDATED
 """
 import gradio as gr
 import re
 import torch
 from diffusers import StableDiffusionXLPipeline
+from diffusers import EulerAncestralDiscreteScheduler
 import gc
 import random
 import numpy as np
@@ -13,14 +15,14 @@ from datetime import datetime
 import os
 
 # 初期のプロンプトとネガティブプロンプトを設定
-INITIAL_PROMPT="masterpiece, high score, great score, absurdres,"
+INITIAL_PROMPT="masterpiece, high score, great score, absurdres"
 INITIAL_NEGATIVE_PROMPT="lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry"
 # INTの最大値
 INT_MAX_VALUE=2147483647
 # 画像を保存するディレクトリ
 SAVE_IMAGE_DIR="./save_image_dir"
 
-def generate(width, height, prompt, negative_prompt, seed):
+def generate(width, height, prompt, negative_prompt, seed, model):
     
     # User Input Information
     prompt_order=f"""\
@@ -29,7 +31,8 @@ def generate(width, height, prompt, negative_prompt, seed):
     height: {height}
     prompt: {prompt}
     negative prompt: {negative_prompt}
-    seed: {seed}\
+    seed: {seed}
+    model: {model}\
     """
 
     message=re.sub(r"^ +(\S)", r"\1", prompt_order, flags=re.MULTILINE)
@@ -47,6 +50,9 @@ def generate(width, height, prompt, negative_prompt, seed):
     add_watermarker=False
     )
     pipe.to('cuda')
+
+    # Set Euler a scheduler
+    pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
 
     #  Define seed value
     seed = seed
@@ -95,7 +101,8 @@ def generate(width, height, prompt, negative_prompt, seed):
     height: {height}
     prompt: {prompt}
     negative prompt: {negative_prompt}
-    seed: {seed}\
+    seed: {seed}
+    model: {model}\
     """
 
     prompt_history_text=re.sub(r"^ +(\S)", r"\1", prompt_history, flags=re.MULTILINE)
@@ -108,7 +115,7 @@ def generate(width, height, prompt, negative_prompt, seed):
 
 demo = gr.Interface(
     fn=generate,
-    inputs=[gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Width"),gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Height"),gr.Textbox(value=INITIAL_PROMPT,label="Prompt"),gr.Textbox(value=INITIAL_NEGATIVE_PROMPT, label="Negative Prompt"),gr.Slider(minimum=-1,maximum=INT_MAX_VALUE, value=-1, step=1, label="Seed (option)", info="-1 is  randomize seed")],
+    inputs=[gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Width"),gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Height"),gr.Textbox(value=INITIAL_PROMPT,label="Prompt"),gr.Textbox(value=INITIAL_NEGATIVE_PROMPT, label="Negative Prompt"),gr.Slider(minimum=-1,maximum=INT_MAX_VALUE, value=-1, step=1, label="Seed (option)", info="-1 is  randomize seed"),gr.Dropdown(choices=["Anim4gine","Anim4gine Opt","Anim4gine Zero"],value="Anim4gine Opt", label="Model(option)", info="selected model will be loaded")],
     outputs=[gr.Image(format="png", width=768, height=768, show_download_button=True)],
     title="Fusion - a personal image generation",
     description="<center>feel free to prompt. 2025.02.01 update</center>",
