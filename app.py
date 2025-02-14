@@ -23,7 +23,7 @@ INT_MAX_VALUE=2147483647
 # 画像を保存するディレクトリ
 SAVE_IMAGE_DIR="./save_image_dir"
 
-def generate(width, height, prompt, negative_prompt, seed, model):
+def generate(width, height, prompt, negative_prompt, model, cfg, steps, seed):
     
     # User Input Information
     prompt_order=f"""\
@@ -32,8 +32,10 @@ def generate(width, height, prompt, negative_prompt, seed, model):
     height: {height}
     prompt: {prompt}
     negative prompt: {negative_prompt}
-    seed: {seed}
-    model: {model}\
+    model: {model}
+    cfg: {cfg}
+    steps: {steps}
+    seed: {seed}\
     """
 
     message=re.sub(r"^ +(\S)", r"\1", prompt_order, flags=re.MULTILINE)
@@ -85,8 +87,8 @@ def generate(width, height, prompt, negative_prompt, seed, model):
         negative_prompt=negative_prompt,
         width=int(width),
         height=int(height),
-        guidance_scale=6,
-        num_inference_steps=25,
+        guidance_scale=int(cfg),
+        num_inference_steps=int(steps),
         generator=generator
     ).images[0]
 
@@ -111,8 +113,10 @@ def generate(width, height, prompt, negative_prompt, seed, model):
     height: {height}
     prompt: {prompt}
     negative prompt: {negative_prompt}
-    seed: {seed}
-    model: {model}\
+    model: {model}
+    cfg: {cfg}
+    steps: {steps}
+    seed: {seed}\
     """
 
     prompt_history_text=re.sub(r"^ +(\S)", r"\1", prompt_history, flags=re.MULTILINE)
@@ -125,10 +129,10 @@ def generate(width, height, prompt, negative_prompt, seed, model):
 
 demo = gr.Interface(
     fn=generate,
-    inputs=[gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Width"),gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Height"),gr.Textbox(value=INITIAL_PROMPT,label="Prompt"),gr.Textbox(value=INITIAL_NEGATIVE_PROMPT, label="Negative Prompt"),gr.Slider(minimum=-1,maximum=INT_MAX_VALUE, value=-1, step=1, label="Seed (option)", info="-1 is  randomize seed"),gr.Dropdown(choices=["Anim4gine","Anim4gine Opt","Anim4gine Zero"],value="Anim4gine Opt", label="Model(option)", info="selected model will be loaded")],
-    outputs=[gr.Image(format="png", width=768, height=768, show_download_button=True)],
+    inputs=[gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Width"),gr.Slider(minimum=512, maximum=1536, value=1024, step=8, label="Height"),gr.Textbox(value=INITIAL_PROMPT,label="Prompt"),gr.Textbox(value=INITIAL_NEGATIVE_PROMPT, label="Negative Prompt"),gr.Dropdown(choices=["Anim4gine","Anim4gine Opt","Anim4gine Zero"],value="Anim4gine Opt", label="Model", info="selected model will be loaded"), gr.Slider(minimum=1, maximum=15, value=5, step=1, label="CFG Scale"),gr.Slider(minimum=1, maximum=40, value=28, step=1, label="Sampling Steps"),gr.Slider(minimum=-1,maximum=INT_MAX_VALUE, value=-1, step=1, label="Seed (option)", info="-1 is  randomize seed"),],
+    outputs=[gr.Image(format="png", height=768, show_download_button=True)],
     title="Fusion - a personal image generation",
-    description="<center>feel free to prompt. 2025.02.01 update</center>",
+    description="<center>feel free to prompt. 2025.02.14 update</center>",
     flagging_mode="never",
     api_name=False,# 一時的にFalse（APIの利用を制限する）
     submit_btn=gr.Button("Generate",variant="primary"),
