@@ -17,6 +17,7 @@ import os
 # 初期のプロンプトとネガティブプロンプトを設定
 INITIAL_PROMPT="masterpiece, high score, great score, absurdres"
 INITIAL_NEGATIVE_PROMPT="lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry"
+MODEL_INFO=[["cagliostrolab/animagine-xl-4.0","4adce86"],["cagliostrolab/animagine-xl-4.0","2b7c1b3"],["cagliostrolab/animagine-xl-4.0-zero","22e4c70"]]
 # INTの最大値
 INT_MAX_VALUE=2147483647
 # 画像を保存するディレクトリ
@@ -38,16 +39,25 @@ def generate(width, height, prompt, negative_prompt, seed, model):
     message=re.sub(r"^ +(\S)", r"\1", prompt_order, flags=re.MULTILINE)
     print(message)
 
+    # Selected Model
+    if model=="Anim4gine":
+        load_model = MODEL_INFO[0]
+    elif model=="Anim4gine Opt":
+        load_model = MODEL_INFO[1]
+    else:
+        load_model = MODEL_INFO[2]
+
     # Generate Image
     torch.cuda.empty_cache()  # GPUメモリの解放をする
     gc.collect() # Pythonの明示的なメモリ解放をする
 
     pipe = StableDiffusionXLPipeline.from_pretrained(
-    "cagliostrolab/animagine-xl-4.0",
+    load_model[0][0],
     torch_dtype=torch.float16,
     use_safetensors=True,
     custom_pipeline="lpw_stable_diffusion_xl",
-    add_watermarker=False
+    add_watermarker=False,
+    revision=load_model[0][1]
     )
     pipe.to('cuda')
 
