@@ -52,12 +52,12 @@ def generate(width, height, prompt, negative_prompt, seed, model):
     gc.collect() # Pythonの明示的なメモリ解放をする
 
     pipe = StableDiffusionXLPipeline.from_pretrained(
-    load_model[0][0],
+    load_model[0],
     torch_dtype=torch.float16,
     use_safetensors=True,
     custom_pipeline="lpw_stable_diffusion_xl",
     add_watermarker=False,
-    revision=load_model[0][1]
+    revision=load_model[1]
     )
     pipe.to('cuda')
 
