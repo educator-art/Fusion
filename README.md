@@ -5,7 +5,7 @@
 Stable Diffusionによる画像生成を行うためのUI、Fusionをリリースしました  
 これは、[ANIM4GINE](https://huggingface.co/cagliostrolab/animagine-xl-4.0)と合わせて公開されたSpaces([Gradio demo](https://huggingface.co/spaces/cagliostrolab/animagine-xl-4.0))に感銘を受け、個人的な趣味で作ったUIになります
 
-
+![](./sample.png)
 
 このインターフェースは数回程度、ちょっと画像生成をするときに使うことを想定して作られました  
 従って、[Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)や、[ComfyUI](https://github.com/comfyanonymous/ComfyUI)の代替を目指すものではありません  
